@@ -10,7 +10,7 @@ $my-typography: mat.define-typography-config();
   background-image: url("../../assets/images/gymFloor.jpg");
   background-size: cover;
 
-  >div {
+  .welcome-container {
     display: block;
     width: 75%;
     text-align: center;
@@ -20,7 +20,7 @@ $my-typography: mat.define-typography-config();
     // TODO update this to use primary color from theme
     background-color: rgba(123, 31, 162, 0.2);
 
-    .welcome-text {
+    &-text {
       @include mat.typography-level($my-typography, 'display-1');
       margin-bottom: 10px;
       color: #ffff;
