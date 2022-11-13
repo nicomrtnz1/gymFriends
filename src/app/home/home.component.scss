@@ -1,0 +1,34 @@
+@use '@angular/material' as mat;
+
+$my-typography: mat.define-typography-config();
+
+:host {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  background-image: url("../../assets/images/gymFloor.jpg");
+  background-size: cover;
+
+  >div {
+    display: block;
+    width: 75%;
+    text-align: center;
+    backdrop-filter: blur(20px);
+    padding: 20px;
+
+    // TODO update this to use primary color from theme
+    background-color: rgba(123, 31, 162, 0.2);
+
+    .welcome-text {
+      @include mat.typography-level($my-typography, 'display-1');
+      margin-bottom: 10px;
+      color: #ffff;
+    }
+
+    .get-stated-btn {
+      @include mat.typography-level($my-typography, 'headline');
+      padding: 15px 30px;
+    }
+  }
+}
