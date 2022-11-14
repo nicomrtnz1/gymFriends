@@ -1,1 +1,131 @@
-<p>friends works!</p>
+<h2>Friends:</h2>
+<form [formGroup]="myFriendsForm">
+  <ng-container formArrayName="myFriends">
+    <ng-container *ngFor="let friendForm of myFriends.controls; let i = index">
+      <div class="form-container" [formGroupName]="i">
+        <mat-form-field appearance="fill">
+          <mat-label> Name </mat-label>
+          <input matInput formControlName="name" />
+          <mat-error
+            *ngIf="
+              friendForm.get('name')?.hasError('required') &&
+              !friendForm.get('name')?.hasError('pattern')
+            "
+          >
+            Name is <strong>required</strong>
+          </mat-error>
+          <mat-error
+            *ngIf="
+              friendForm.get('name')?.hasError('pattern') &&
+              !friendForm.get('name')?.hasError('required')
+            "
+          >
+            Name can only contain alphabet letters and spaces
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label> Age </mat-label>
+          <input matInput formControlName="age" />
+          <mat-error
+            *ngIf="
+              friendForm.get('age')?.hasError('required') &&
+              !friendForm.get('age')?.hasError('pattern')
+            "
+          >
+            Age is <strong>required</strong>
+          </mat-error>
+          <mat-error
+            *ngIf="
+              friendForm.get('age')?.hasError('pattern') &&
+              !friendForm.get('age')?.hasError('min')
+            "
+          >
+            Age must be a whole number
+          </mat-error>
+          <mat-error *ngIf="friendForm.get('age')?.hasError('min')">
+            Age must be 1 or greater
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label> Weight </mat-label>
+          <input matInput formControlName="weight" />
+          <mat-error
+            *ngIf="
+              friendForm.get('weight')?.hasError('required') &&
+              !friendForm.get('weight')?.hasError('pattern')
+            "
+          >
+            Weight is <strong>required</strong>
+          </mat-error>
+          <mat-error
+            *ngIf="
+              friendForm.get('weight')?.hasError('pattern') &&
+              !friendForm.get('weight')?.hasError('min')
+            "
+          >
+            Weight must be a whole number
+          </mat-error>
+          <mat-error *ngIf="friendForm.get('weight')?.hasError('min')">
+            Weight must be 1 or greater
+          </mat-error>
+        </mat-form-field>
+        <mat-form-field class="multiple-items" appearance="fill">
+          <mat-label>Friends</mat-label>
+          <mat-chip-list
+            #chipList
+            aria-label="Friends"
+            formControlName="friends"
+          >
+            <mat-chip
+              *ngFor="let friend of friendForm.get('friends')?.value"
+              (removed)="removeChip(friend, friendForm.get('friends'))"
+            >
+              {{ friend.name }}
+              <button matChipRemove>
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </mat-chip>
+            <input
+              placeholder="Their friend's name..."
+              [matChipInputFor]="chipList"
+              [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+              [matChipInputAddOnBlur]="true"
+              (matChipInputTokenEnd)="
+                addChip($event, friendForm.get('friends'))
+              "
+            />
+          </mat-chip-list>
+          <mat-error *ngIf="friendForm.get('friends')?.hasError('required')">
+            A friend is <strong>required</strong>
+          </mat-error>
+        </mat-form-field>
+        <button
+          type="button"
+          mat-stroked-button
+          color="accent"
+          (click)="removeFriend(i)"
+        >
+          Remove
+        </button>
+      </div>
+    </ng-container>
+  </ng-container>
+</form>
+<button
+  type="button"
+  mat-raised-button
+  color="accent"
+  class="add-btn"
+  (click)="addFriend()"
+>
+  Add friend
+</button>
+<button
+  type="button"
+  mat-raised-button
+  color="primary"
+  class="results-btn"
+  (click)="viewResults()"
+>
+  View Results
+</button>
