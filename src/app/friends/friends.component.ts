@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
+import { Store, select } from '@ngrx/store';
 import {
   AbstractControl,
   FormArray,
@@ -10,9 +11,11 @@ import {
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-export interface Friend {
-  name: string;
-}
+import { FriendName } from '../shared/friend-name.interface';
+import { getFriends, loadFriends } from '../store/my-friends.actions';
+import { Observable } from 'rxjs';
+import { selectFriends } from '../store/my-friends.reducer';
+
 @Component({
   selector: 'app-friends',
   templateUrl: './friends.component.html',
@@ -21,14 +24,17 @@ export interface Friend {
 export class FriendsComponent {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   myFriendsForm: FormGroup;
-  friendsArray: Friend[] = [];
+  friendsArray: FriendName[] = [];
   alphaStringRegExp = new RegExp(/^[A-Za-z ]+$/);
-
+  friends$: Observable<any>;
   constructor(
     private readonly fb: FormBuilder,
     private readonly router: Router,
-    private readonly snackBar: MatSnackBar
+    private readonly snackBar: MatSnackBar,
+    private readonly store: Store<{myFriends: []}>,
   ) {
+    this.store.dispatch(getFriends());
+    this.friends$ = this.store.select(selectFriends)
     this.myFriendsForm = this.fb.group({
       myFriends: this.fb.array([])
     });
@@ -78,7 +84,7 @@ export class FriendsComponent {
       value &&
       this.isNameValid(value) &&
       !friendsArray?.value.find(
-        (friend: Friend) =>
+        (friend: FriendName) =>
           friend.name.toLowerCase() == value.toLocaleLowerCase()
       )
     ) {
@@ -96,9 +102,9 @@ export class FriendsComponent {
     return false;
   }
 
-  removeChip(friend: Friend, friendsArray: AbstractControl | null) {
+  removeChip(friend: FriendName, friendsArray: AbstractControl | null) {
     const index = friendsArray?.value.findIndex(
-      (x: Friend) => x.name === friend.name
+      (x: FriendName) => x.name === friend.name
     );
     if (index >= 0 && friendsArray) {
       friendsArray.value.splice(index, 1);
@@ -109,6 +115,9 @@ export class FriendsComponent {
   viewResults() {
     if (this.myFriendsForm.value.myFriends.length > 0) {
       if (this.myFriendsForm.valid) {
+        this.store.dispatch(
+          loadFriends( this.myFriendsForm.value)
+        );
         this.router.navigate(['/results']);
       } else {
         this.openSnackBar(

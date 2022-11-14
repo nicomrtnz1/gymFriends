@@ -1,18 +1,22 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Store, StoreModule } from '@ngrx/store';
 import { FriendsComponent } from './friends.component';
 import { FormBuilder } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { MyFriendsReducer } from '../store/my-friends.reducer';
 
 describe('FriendsComponent', () => {
   let component: FriendsComponent;
   let fixture: ComponentFixture<FriendsComponent>;
   let snackBar: MatSnackBar;
   let fb: FormBuilder;
+  let store: Store;
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
+      imports: [RouterTestingModule, StoreModule.forRoot(MyFriendsReducer)],
       providers: [
         FormBuilder,
         { provide: MatSnackBar, useClass: MatSnackBarStub }
@@ -24,6 +28,7 @@ describe('FriendsComponent', () => {
     fixture = TestBed.createComponent(FriendsComponent);
     component = fixture.componentInstance;
     snackBar = TestBed.inject(MatSnackBar);
+    store = TestBed.inject(Store);
     fb = new FormBuilder();
     fixture.detectChanges();
   });
