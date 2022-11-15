@@ -30,6 +30,7 @@ export class ScatterChartComponent implements AfterViewInit {
     const element = this.chartContainer.nativeElement;
     const data = this.data;
     const margin = { top: 20, right: 50, bottom: 50, left: 40 };
+    const myColors = d3.scaleLinear<string>().domain([1,data.length]).range(['#22e987', '#7b1fa2']);
 
     const svg = d3
       .select(element)
@@ -78,14 +79,7 @@ export class ScatterChartComponent implements AfterViewInit {
       .data(data)
       .enter()
       .append('circle')
-      .attr('fill', (d) => {
-        if (parseInt(d['weight']) > maxWeight * 0.6) {
-          return 'red';
-        } else if (parseInt(d['weight']) > maxWeight * 0.3) {
-          return 'yellow';
-        }
-        return 'green';
-      })
+      .attr('fill', (d ,i) => myColors(i))
       .attr('cx', (d) => x(parseInt(d.age)))
       .attr('cy', (d) => y(parseInt(d.weight)))
       .attr('r', 7);

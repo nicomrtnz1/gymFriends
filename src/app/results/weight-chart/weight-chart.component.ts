@@ -30,6 +30,7 @@ export class WeightChartComponent implements AfterViewInit {
     const element = this.chartContainer.nativeElement;
     const data = this.data;
     const margin = { top: 20, right: 50, bottom: 50, left: 40 };
+    const myColors = d3.scaleLinear<string>().domain([1,data.length]).range(['#22e987', '#7b1fa2']);
 
     const svg = d3
       .select(element)
@@ -79,14 +80,7 @@ export class WeightChartComponent implements AfterViewInit {
       .data(data)
       .enter()
       .append('rect')
-      .attr('fill', (d) => {
-        if (parseInt(d['weight']) > max * 0.6) {
-          return 'red';
-        } else if (parseInt(d['weight']) > max * 0.3) {
-          return 'yellow';
-        }
-        return 'green';
-      })
+      .attr('fill', (d ,i) => myColors(i))
       .attr('class', 'bar')
       .attr('x', (d) => x(d.name) as number)
       .attr('y', (d) => y(parseInt(d['weight'])))
