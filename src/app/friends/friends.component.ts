@@ -12,8 +12,8 @@ import { MatChipInputEvent } from '@angular/material/chips';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { FriendName } from '../shared/friend-name.interface';
-import { getFriends, loadFriends } from '../store/my-friends.actions';
-import { first, Observable, Subscription } from 'rxjs';
+import { loadFriends, resetState } from '../store/my-friends.actions';
+import { first, Observable } from 'rxjs';
 import { selectFriends } from '../store/my-friends.reducer';
 import { Friend } from '../shared/friend.interface';
 
@@ -35,7 +35,6 @@ export class FriendsComponent implements OnInit {
     private readonly snackBar: MatSnackBar,
     private readonly store: Store<{ myFriends: [] }>
   ) {
-    this.store.dispatch(getFriends());
     this.friends$ = this.store.select(selectFriends);
     this.myFriendsForm = this.fb.group({
       myFriends: this.fb.array([])
@@ -122,6 +121,7 @@ export class FriendsComponent implements OnInit {
     if (this.myFriendsForm.value.myFriends.length > 0) {
       if (this.myFriendsForm.valid) {
         this.store.dispatch(loadFriends(this.myFriendsForm.value));
+        this.openSnackBar('Data saved!');
         this.router.navigate(['/results']);
       } else {
         this.myFriendsForm.markAllAsTouched();
@@ -141,16 +141,23 @@ export class FriendsComponent implements OnInit {
     });
   }
 
+  clearSaved() {
+    this.store.dispatch(resetState());
+    this.myFriends.clear();
+    this.openSnackBar('Data Cleared!');
+  }
+
   populateFormFromData(myFriends: Friend[]) {
-    this.myFriendsForm.reset();
+    if (myFriends.length === 0) return;
+
     myFriends.map(() => {
       this.addFriend();
     });
     this.myFriends.patchValue(JSON.parse(JSON.stringify(myFriends)));
   }
 
-  private subscribeToState(): Subscription {
-    return this.friends$.pipe(first()).subscribe((state) => {
+  private subscribeToState() {
+    this.friends$.pipe(first()).subscribe((state) => {
       this.populateFormFromData(state.myFriends);
     });
   }

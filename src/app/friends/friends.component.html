@@ -126,3 +126,12 @@
 >
   View Results
 </button>
+<button
+  *ngIf="(friends$ | async)?.myFriends?.length > 0"
+  type="button"
+  mat-raised-button
+  class="results-btn"
+  (click)="clearSaved()"
+>
+  Clear Saved Data
+</button>

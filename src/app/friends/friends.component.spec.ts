@@ -85,6 +85,7 @@ describe('FriendsComponent', () => {
     const routerSpy = jest
       .spyOn(component['router'], 'navigate')
       .mockReturnValue(Promise.resolve(true));
+    const openSnackBarSpy = jest.spyOn(component, 'openSnackBar');
     component.addFriend();
     component.myFriends.controls[0].patchValue({
       name: 'asdf',
@@ -93,6 +94,8 @@ describe('FriendsComponent', () => {
       weight: '9'
     });
     component.viewResults();
+
+    expect(openSnackBarSpy).toBeCalledWith('Data saved!');
     expect(routerSpy).toBeCalledWith(['/results']);
   });
 
@@ -291,13 +294,22 @@ describe('FriendsComponent', () => {
         weight: '120'
       }
     ];
-    const formResetSpy = jest.spyOn(component.myFriendsForm, 'reset');
+    expect(component.myFriends.controls.length).toBe(0);
+    expect(component.myFriendsForm.value).toEqual({ myFriends: [] });
+    component.populateFormFromData([]);
     expect(component.myFriends.controls.length).toBe(0);
     expect(component.myFriendsForm.value).toEqual({ myFriends: [] });
     component.populateFormFromData(mockFriends);
-    expect(formResetSpy).toBeCalled();
     expect(component.myFriends.controls.length).toBe(2);
     expect(component.myFriendsForm.value).toEqual({ myFriends: mockFriends });
+  });
+
+  test('should depatch store rest on clearSaved', () => {
+    const dispatchSpy = jest.spyOn(component['store'], 'dispatch');
+    const openSnackBarSpy = jest.spyOn(component, 'openSnackBar');
+    component.clearSaved();
+    expect(dispatchSpy).toBeCalledWith({ type: '[[my-friend] reset state' });
+    expect(openSnackBarSpy).toBeCalledWith('Data Cleared!');
   });
 });
 
