@@ -1,9 +1,24 @@
 <h2>Results:</h2>
-<button type="button" mat-raised-button color="primary" routerLink="/friends">
-  Edit Friends
-</button>
 
-<ng-container *ngIf="friends$ | async as friends">
+<ng-container
+  *ngIf="
+    (friends$ | async)?.myFriends?.length > 0 && (friends$ | async) as friends;
+    else noFriends
+  "
+>
   <app-weight-chart [data]="friends.myFriends"></app-weight-chart>
   <app-scatter-chart [data]="friends.myFriends"></app-scatter-chart>
+  <button type="button" mat-raised-button color="primary" routerLink="/friends">
+    Edit Friends
+  </button>
 </ng-container>
+
+<ng-template #noFriends>
+  <p>
+    No data has been saved. Click
+    <button mat-button color="accent" class="here-btn" routerLink="/friends">
+      here
+    </button>
+    to add friends
+  </p>
+</ng-template>
