@@ -1,1 +1,8 @@
-<p>results works!</p>
+<h2>Results:</h2>
+<button type="button" mat-raised-button color="primary" routerLink="/friends">
+  Edit Friends
+</button>
+
+<ng-container *ngIf="friends$ | async as friends">
+  <p>Place holder for charts</p>
+</ng-container>
