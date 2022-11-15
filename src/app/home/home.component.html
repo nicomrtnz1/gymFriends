@@ -4,12 +4,35 @@
     no more! All you need in some basic information about your friends and we
     can see where you stand.
   </div>
-  <button
-    mat-raised-button
-    color="primary"
-    routerLink="/friends"
-    class="get-stated-btn"
+  <ng-container
+    *ngIf="(friends$ | async)?.myFriends?.length > 0; else noFriends"
   >
-    Lets Get Started!
-  </button>
+    <button
+      mat-raised-button
+      color="primary"
+      routerLink="/friends"
+      class="get-stated-btn"
+      (click)="resetData()"
+    >
+      Lets Start Fresh!
+    </button>
+    <button
+      mat-raised-button
+      color="accent"
+      routerLink="/friends"
+      class="get-stated-btn"
+    >
+      View Current Friends
+    </button>
+  </ng-container>
+  <ng-template #noFriends>
+    <button
+      mat-raised-button
+      color="primary"
+      routerLink="/friends"
+      class="get-stated-btn"
+    >
+      Lets Get Started!
+    </button>
+  </ng-template>
 </div>

@@ -22,12 +22,12 @@ $my-typography: mat.define-typography-config();
 
     &-text {
       @include mat.typography-level($my-typography, 'display-1');
-      margin-bottom: 10px;
       color: #ffff;
     }
 
-    .get-stated-btn {
+    button {
       @include mat.typography-level($my-typography, 'headline');
+      margin: 10px 10px 0 10px;
       padding: 15px 30px;
     }
   }
