@@ -18,10 +18,9 @@ Run `ng build` to build the project. The build artifacts will be stored in the `
 
 Run `npm test` to execute the unit tests via [Jest](https://jestjs.io/).
 
-## Running end-to-end tests
+## Things to come
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+Would like to move away from local storage and connect to a database so users can look at their data on different devices.
 
-## Further help
+More charts! Charts with triggers to group large datasets be age or weight. A network graph to show friends that people have in-common.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
