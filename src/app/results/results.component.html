@@ -4,5 +4,6 @@
 </button>
 
 <ng-container *ngIf="friends$ | async as friends">
-  <p>Place holder for charts</p>
+  <app-weight-chart [data]="friends.myFriends"></app-weight-chart>
+  <app-scatter-chart [data]="friends.myFriends"></app-scatter-chart>
 </ng-container>
