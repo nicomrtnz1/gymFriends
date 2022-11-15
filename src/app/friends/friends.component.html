@@ -20,7 +20,7 @@
               !friendForm.get('name')?.hasError('required')
             "
           >
-            Name can only contain alphabet letters and spaces
+            Alphabet letters and spaces only
           </mat-error>
         </mat-form-field>
         <mat-form-field appearance="fill">
@@ -95,9 +95,6 @@
               "
             />
           </mat-chip-list>
-          <mat-error *ngIf="friendForm.get('friends')?.hasError('required')">
-            A friend is <strong>required</strong>
-          </mat-error>
         </mat-form-field>
         <button
           type="button"

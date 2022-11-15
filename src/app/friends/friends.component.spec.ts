@@ -275,6 +275,30 @@ describe('FriendsComponent', () => {
       'Name can only contain alphabet letters and spaces'
     );
   });
+
+  test('should populate form from data', () => {
+    const mockFriends = [
+      {
+        name: 'bar',
+        friends: [{ name: 'foo' }],
+        age: '3',
+        weight: '20'
+      },
+      {
+        name: 'foo',
+        friends: [],
+        age: '43',
+        weight: '120'
+      }
+    ];
+    const formResetSpy = jest.spyOn(component.myFriendsForm, 'reset');
+    expect(component.myFriends.controls.length).toBe(0);
+    expect(component.myFriendsForm.value).toEqual({ myFriends: [] });
+    component.populateFormFromData(mockFriends);
+    expect(formResetSpy).toBeCalled();
+    expect(component.myFriends.controls.length).toBe(2);
+    expect(component.myFriendsForm.value).toEqual({ myFriends: mockFriends });
+  });
 });
 
 class MatSnackBarStub {

@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import {
   AbstractControl,
   FormArray,
@@ -13,31 +13,42 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { FriendName } from '../shared/friend-name.interface';
 import { getFriends, loadFriends } from '../store/my-friends.actions';
-import { Observable } from 'rxjs';
+import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
 import { selectFriends } from '../store/my-friends.reducer';
+import { Friend } from '../shared/friend.interface';
 
 @Component({
   selector: 'app-friends',
   templateUrl: './friends.component.html',
   styleUrls: ['./friends.component.scss']
 })
-export class FriendsComponent {
+export class FriendsComponent implements OnDestroy, OnInit {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   myFriendsForm: FormGroup;
   friendsArray: FriendName[] = [];
   alphaStringRegExp = new RegExp(/^[A-Za-z ]+$/);
   friends$: Observable<any>;
+  ngDestroyed$ = new Subject();
+
   constructor(
     private readonly fb: FormBuilder,
     private readonly router: Router,
     private readonly snackBar: MatSnackBar,
-    private readonly store: Store<{myFriends: []}>,
+    private readonly store: Store<{ myFriends: [] }>
   ) {
     this.store.dispatch(getFriends());
-    this.friends$ = this.store.select(selectFriends)
+    this.friends$ = this.store.select(selectFriends);
     this.myFriendsForm = this.fb.group({
       myFriends: this.fb.array([])
     });
+  }
+
+  ngOnInit() {
+    this.subscribeToState();
+  }
+
+  ngOnDestroy() {
+    this.ngDestroyed$.next(null);
   }
 
   get myFriends(): FormArray {
@@ -50,7 +61,7 @@ export class FriendsComponent {
         '',
         [Validators.required, Validators.pattern(this.alphaStringRegExp)]
       ],
-      friends: [[], [Validators.required, Validators.min(1)]],
+      friends: [[]],
       age: [
         '',
         [
@@ -115,9 +126,7 @@ export class FriendsComponent {
   viewResults() {
     if (this.myFriendsForm.value.myFriends.length > 0) {
       if (this.myFriendsForm.valid) {
-        this.store.dispatch(
-          loadFriends( this.myFriendsForm.value)
-        );
+        this.store.dispatch(loadFriends(this.myFriendsForm.value));
         this.router.navigate(['/results']);
       } else {
         this.openSnackBar(
@@ -134,5 +143,21 @@ export class FriendsComponent {
       duration: 3000,
       verticalPosition: 'top'
     });
+  }
+
+  populateFormFromData(myFriends: Friend[]) {
+    this.myFriendsForm.reset();
+    myFriends.map(() => {
+      this.addFriend();
+    });
+    this.myFriends.patchValue(JSON.parse(JSON.stringify(myFriends)));
+  }
+
+  private subscribeToState(): Subscription {
+    return this.friends$
+      .pipe(takeUntil(this.ngDestroyed$))
+      .subscribe((state) => {
+        this.populateFormFromData(state.myFriends);
+      });
   }
 }
