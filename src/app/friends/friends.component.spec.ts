@@ -257,7 +257,7 @@ describe('FriendsComponent', () => {
     const snackBarSpy = jest.spyOn(snackBar, 'open');
     component.openSnackBar('TestMessag');
     expect(snackBarSpy).toBeCalledWith('TestMessag', '', {
-      duration: 3000,
+      duration: 4000,
       verticalPosition: 'top'
     });
   });

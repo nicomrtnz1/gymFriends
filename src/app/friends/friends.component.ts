@@ -13,7 +13,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { FriendName } from '../shared/friend-name.interface';
 import { getFriends, loadFriends } from '../store/my-friends.actions';
-import { Observable, Subject, Subscription, takeUntil } from 'rxjs';
+import { first, Observable, Subscription } from 'rxjs';
 import { selectFriends } from '../store/my-friends.reducer';
 import { Friend } from '../shared/friend.interface';
 
@@ -22,13 +22,12 @@ import { Friend } from '../shared/friend.interface';
   templateUrl: './friends.component.html',
   styleUrls: ['./friends.component.scss']
 })
-export class FriendsComponent implements OnDestroy, OnInit {
+export class FriendsComponent implements OnInit {
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
   myFriendsForm: FormGroup;
   friendsArray: FriendName[] = [];
   alphaStringRegExp = new RegExp(/^[A-Za-z ]+$/);
   friends$: Observable<any>;
-  ngDestroyed$ = new Subject();
 
   constructor(
     private readonly fb: FormBuilder,
@@ -45,10 +44,6 @@ export class FriendsComponent implements OnDestroy, OnInit {
 
   ngOnInit() {
     this.subscribeToState();
-  }
-
-  ngOnDestroy() {
-    this.ngDestroyed$.next(null);
   }
 
   get myFriends(): FormArray {
@@ -129,6 +124,7 @@ export class FriendsComponent implements OnDestroy, OnInit {
         this.store.dispatch(loadFriends(this.myFriendsForm.value));
         this.router.navigate(['/results']);
       } else {
+        this.myFriendsForm.markAllAsTouched();
         this.openSnackBar(
           'One or more fields are missing required information'
         );
@@ -140,7 +136,7 @@ export class FriendsComponent implements OnDestroy, OnInit {
 
   openSnackBar(message: string) {
     this.snackBar.open(message, '', {
-      duration: 3000,
+      duration: 4000,
       verticalPosition: 'top'
     });
   }
@@ -154,10 +150,8 @@ export class FriendsComponent implements OnDestroy, OnInit {
   }
 
   private subscribeToState(): Subscription {
-    return this.friends$
-      .pipe(takeUntil(this.ngDestroyed$))
-      .subscribe((state) => {
-        this.populateFormFromData(state.myFriends);
-      });
+    return this.friends$.pipe(first()).subscribe((state) => {
+      this.populateFormFromData(state.myFriends);
+    });
   }
 }
